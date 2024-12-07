@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.programiocode.mapper.submit.SubmitInfoMapper">
+    <!-- 手动映射 -->
+    <resultMap id="submitInfoResultMap" type="com.example.programiocommon.pojo.dto.SubmitInfoDTO">
+        <result property="id" column="id"/>
+        <result property="userAccount" column="user_account"/>
+        <result property="questionId" column="question_id"/>
+        <result property="languageType" column="language_type"/>
+        <result property="code" column="code"/>
+        <result property="accuracy" column="accuracy"/>
+        <result property="runningTime" column="running_time"/>
+    </resultMap>
+
+</mapper>

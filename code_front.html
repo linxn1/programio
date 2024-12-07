@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码提交</title>
+    <style>
+        /* 重置浏览器默认样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .code-area {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .code-container {
+            width: 50%;
+        }
+
+        .code-container textarea {
+            width: 100%;
+            height: 300px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            resize: none;
+            transition: border-color 0.3s;
+        }
+
+        .code-container textarea:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .result-container {
+            width: 50%;
+            padding: 20px;
+            background-color: #f4f7fc;
+            border-radius: 4px;
+            height: 300px;
+            border: 1px solid #ddd;
+            overflow-y: auto;
+        }
+
+        .btn-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+        }
+
+        .success-message {
+            color: green;
+            font-size: 14px;
+        }
+
+        .output {
+            margin-top: 20px;
+        }
+
+        .output div {
+            margin-bottom: 10px;
+        }
+
+        .output .output-label {
+            font-weight: bold;
+        }
+
+        .select-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        select {
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>代码提交</h2>
+        <div class="select-container">
+            <label for="languageSelect">选择代码语言</label>
+            <select id="languageSelect" required>
+                <option value="java">Java</option>
+                <option value="python">Python</option>
+                <option value="cpp">C++</option>
+            </select>
+        </div>
+        <div class="code-area">
+            <div class="code-container">
+                <h3>编写代码</h3>
+                <textarea id="codeInput" placeholder="在这里编写你的代码..." required></textarea>
+            </div>
+            <div class="result-container" id="resultContainer">
+                <h3>输出结果</h3>
+                <pre id="output"></pre>
+                <div id="outputDetails" class="output"></div>
+            </div>
+        </div>
+        <div class="btn-container">
+            <button id="executeButton">执行代码</button>
+            <button id="submitButton">提交代码</button>
+        </div>
+        <div id="message" class="error-message"></div>
+    </div>
+
+    <script>
+        const executeButton = document.getElementById('executeButton');
+        const submitButton = document.getElementById('submitButton');
+        const codeInput = document.getElementById('codeInput');
+        const languageSelect = document.getElementById('languageSelect');
+        const output = document.getElementById('output');
+        const message = document.getElementById('message');
+        const outputDetails = document.getElementById('outputDetails');
+
+        // 显示消息
+        const showMessage = (msg, type) => {
+            message.textContent = msg;
+            message.className = type === 'success' ? 'success-message' : 'error-message';
+        };
+
+        // 显示执行结果
+        const showExecutionResult = (data) => {
+            // 清空上次的输出
+            output.textContent = data.codeOutput || "无输出";
+            outputDetails.innerHTML = `
+                <div><span class="output-label">执行状态:</span> ${data.isCorrect === "correct" ? "成功" : "失败"}</div>
+                <div><span class="output-label">执行时间:</span> ${data.time || "N/A"}</div>
+                <div><span class="output-label">内存使用:</span> ${data.memory || "N/A"}</div>
+                <div><span class="output-label">语言:</span> ${data.language}</div>
+                <div><span class="output-label">是否接受:</span> ${data.isAccepted === "yes" ? "是" : "否"}</div>
+                <div><span class="output-label">准确率:</span> ${data.accuracyRate || "N/A"}</div>
+                <div><span class="output-label">正确输出:</span> ${data.codeOutput || "N/A"}</div>
+                <div><span class="output-label">错误输出:</span> ${data.errorOutput || "N/A"}</div>
+            `;
+        };
+
+        // 执行代码
+        const executeCode = () => {
+            const codeData = {
+                userId: "1", // 这里可以根据需要从用户登录信息中获取
+                questionId: 101, // 同样可以根据需要传入
+                language: languageSelect.value, // 获取选择的编程语言
+                code: codeInput.value,
+                userInput: "" // 可以设置输入的值，如果没有则为空
+            };
+
+            fetch('http://localhost:15000/code/execute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(codeData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isCorrect === "correct") {
+                        showMessage("代码执行成功！", "success");
+                    } else {
+                        showMessage("代码执行失败！", "error");
+                    }
+                    showExecutionResult(data);
+                })
+                .catch(error => {
+                    console.error('请求失败:', error);
+                    showMessage("请求失败，请稍后再试！", "error");
+                });
+        };
+
+        // 提交代码
+        const submitCode = () => {
+            const codeData = {
+                userId: "1", // 这里可以根据需要从用户登录信息中获取
+                questionId: 101, // 同样可以根据需要传入
+                language: languageSelect.value, // 获取选择的编程语言
+                code: codeInput.value,
+                userInput: "" // 可以设置输入的值，如果没有则为空
+            };
+
+            fetch('http://localhost:15000/code/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(codeData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isCorrect === "correct") {
+                        showMessage("代码提交成功！", "success");
+                        showExecutionResult(data);
+                    } else {
+                        showMessage("代码提交失败！", "error");
+                        showExecutionResult(data);
+                    }
+                })
+                .catch(error => {
+                    console.error('请求失败:', error);
+                    showMessage("请求失败，请稍后再试！", "error");
+                });
+        };
+
+        // 事件绑定
+        executeButton.addEventListener('click', executeCode);
+        submitButton.addEventListener('click', submitCode);
+    </script>
+</body>
+
+</html>

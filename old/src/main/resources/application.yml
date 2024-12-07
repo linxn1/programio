@@ -1,0 +1,25 @@
+server:
+  port: 10000
+
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/program_submit
+    username: root
+    password: root
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+docker:
+  image: "programio-code-environment"      # 后面再做
+  containerName: "programio-environment"
+  exposedPort: 80                         # 容器内暴露端口
+  hostPort: 11000                         # 容器外接收端口
+  host: "tcp://localhost:2375"            # windows的docker守护线程
+  dockerVolume: "G://programio//docker"    #windows下设置挂载的路径
+
+  #  host: "127.0.0.1"                      # linux的docker守护线程端口,不同服务器上运行需要进一步设置
+  #  dockerVolume: "G://programio//docker"    #需要重新设置

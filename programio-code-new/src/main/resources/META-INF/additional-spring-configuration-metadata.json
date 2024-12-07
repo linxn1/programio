@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "docker.image",
+      "type": "java.lang.String",
+      "description": "Description for docker.image."
+    },
+    {
+      "name": "docker.exposedPort",
+      "type": "java.lang.String",
+      "description": "Description for docker.exposedPort."
+    },
+    {
+      "name": "docker.hostPort",
+      "type": "java.lang.String",
+      "description": "Description for docker.hostPort."
+    }
+  ] }

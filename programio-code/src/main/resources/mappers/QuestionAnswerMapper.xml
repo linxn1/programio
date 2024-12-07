@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.programiocode.mapper.question.QuestionAnswerMapper">
+    <!-- 手动映射 直接映射会报null错误-->
+    <resultMap id="questionAnswerResultMap" type="com.example.programiocommon.pojo.dto.QuestionAnswerDTO">
+        <result property="id" column="id"/>
+        <result property="questionId" column="question_id"/>
+        <result property="inputCase" column="input_case"/>
+        <result property="answer" column="answer"/>
+    </resultMap>
+
+    <!-- 手动映射 -->
+    <resultMap id="questionInfoResultMap" type="com.example.programiocommon.pojo.dto.QuestionInfoDTO">
+        <result property="id" column="id"/>
+        <result property="questionId" column="question_id"/>
+        <result property="difficulty" column="difficulty"/>
+        <result property="question" column="question"/>
+        <result property="timeRequest" column="time_request"/>
+        <result property="memoryRequest" column="memory_request"/>
+    </resultMap>
+
+    <select id="getQuestionAnswerById" resultMap="questionAnswerResultMap">
+        SELECT *
+        FROM question_answer
+        WHERE id = #{id}
+    </select>
+
+    <select id="getQuestionAnswerByQuestionId" resultMap="questionAnswerResultMap">
+        SELECT *
+        FROM question_answer
+        WHERE question_id = #{questionId}
+    </select>
+</mapper>

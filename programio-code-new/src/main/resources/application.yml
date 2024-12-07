@@ -1,0 +1,44 @@
+server:
+  port: 17000
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+#  autoconfigure:
+#    exclude:
+#      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update  # 更新数据库结构
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+#  datasource:
+  #    url: jdbc:mariadb://localhost:3306/program_submit
+  #    username: root
+  #    password: root
+#      driver-class-name: org.mariadb.jdbc.Driver
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+mybatis:
+  mapper-locations: classpath:/mappers/*.xml
+  configuration:
+    map-underscore-to-camel-case: true  # 开启自动映射
+
+logging:
+  level:
+    org.mybatis: DEBUG
+    org.springframework.jdbc.datasource: DEBUG
+    org.mybatis.spring.SqlSessionFactoryBean: DEBUG
+
+
+codeOutputPath: "src/main/resources/tempfiles"
+

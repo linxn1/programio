@@ -1,0 +1,67 @@
+package com.example.programiocode.configuration;
+
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.mybatis.spring.mapper.MapperScannerConfigurer;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import javax.sql.DataSource;
+
+@Configuration
+@EnableTransactionManagement
+public class SubmitDataBaseConfiguration {
+
+    // 配置主数据源
+    @Bean(name = "programIOSubmitDataSource")
+    public DataSource submitDataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/programio_submit?useUnicode=true&characterEncoding=utf8mb4&serverTimezone=UTC");
+        dataSource.setUsername("root");
+        dataSource.setPassword("root");
+        return dataSource;
+    }
+
+    // 配置 SqlSessionFactory
+    @Bean(name = "programIOSubmitSqlSessionFactory")
+    public SqlSessionFactory submitSqlSessionFactory(@Qualifier("programIOSubmitDataSource") DataSource dataSource) throws Exception {
+        SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
+        factoryBean.setDataSource(dataSource);
+
+        // 如果需要，还可以设置 MyBatis 配置
+        // factoryBean.setConfiguration(myBatisConfig);
+
+        // 设置 Mapper 文件的位置
+        factoryBean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath*:mappers/*.xml"));
+
+        return factoryBean.getObject();
+    }
+
+    // 配置 SqlSessionTemplate
+    @Bean(name = "programIOSubmitSqlSessionTemplate")
+    public SqlSessionTemplate submitSqlSessionTemplate(@Qualifier("programIOSubmitSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
+        return new SqlSessionTemplate(sqlSessionFactory);
+    }
+
+    // 配置事务管理器
+    @Bean(name = "programIOSubmitTransactionManager")
+    public PlatformTransactionManager submitTransactionManager(@Qualifier("programIOSubmitDataSource") DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+
+    // 扫描 Mapper 接口
+    @Bean
+    public MapperScannerConfigurer submitMapperScannerConfigurer() {
+        MapperScannerConfigurer scannerConfigurer = new MapperScannerConfigurer();
+        scannerConfigurer.setBasePackage("com.example.programiocode.mapper.submit");  // 指定Mapper接口包名
+        return scannerConfigurer;
+    }
+}

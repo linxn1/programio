@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.programiosso.mapper.user.UserTokenMapper">
+    <!-- 手动映射 -->
+    <resultMap id="userInfoResultMap" type="com.example.programiocommon.pojo.dto.UserTokenDTO">
+        <result property="id" column="id"/>
+        <result property="userAccount" column="user_account"/>
+        <result property="permission" column="permission"/>
+        <result property="token" column="token"/>
+        <result property="email" column="email"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="expiresAt" column="expires_at"/>
+    </resultMap>
+
+
+    <!-- 插入操作 -->
+    <insert id="insertUserToken" parameterType="com.example.programiocommon.pojo.dto.UserTokenDTO"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user_token (user_account, permission, token, expires_at)
+        VALUES (#{userAccount}, #{permission}, #{token}, #{expiresAt});
+    </insert>
+
+    <!-- 查询用户信息 -->
+    <select id="findUserByAccount" resultMap="userInfoResultMap" parameterType="java.lang.Integer">
+        SELECT *
+        FROM user_token
+        WHERE user_account = #{userAccount}
+    </select>
+
+    <!-- 删除整行数据 -->
+    <delete id="deleteUserByAccount" parameterType="java.lang.Integer">
+        DELETE FROM user_token
+        WHERE user_account = #{userAccount};
+    </delete>
+
+</mapper>

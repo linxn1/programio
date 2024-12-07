@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.programiosso.mapper.user.UserInfoMapper">
+    <!-- 手动映射 -->
+    <resultMap id="userInfoResultMap" type="com.example.programiocommon.pojo.dto.UserInfoDTO">
+        <result property="id" column="id"/>
+        <result property="userAccount" column="user_account"/>
+        <result property="userName" column="user_name"/>
+        <result property="email" column="email"/>
+        <result property="password" column="password"/>
+        <result property="permission" column="permission"/>
+    </resultMap>
+    <!-- 根据用户名查找用户 -->
+    <select id="countUserByUsername" resultType="Integer">
+        SELECT COUNT(*)
+        FROM user_info
+        WHERE user_account = #{userAccount}
+    </select>
+
+
+    <!-- 插入用户信息 -->
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user_info (user_name, user_account, email, password)
+        VALUES (#{userName}, #{userAccount}, #{email}, #{password})
+    </insert>
+
+    <!-- 根据用户名查找用户 -->
+    <select id="findByUserAccount" resultMap="userInfoResultMap">
+        SELECT *
+        FROM user_info
+        WHERE user_account = #{userAccount}
+    </select>
+
+
+</mapper>

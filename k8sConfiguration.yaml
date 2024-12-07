@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: programio-code-deployment
+spec:
+  replicas: 3  # 启动3个副本
+  selector:
+    matchLabels:
+      app: programio-code
+  template:
+    metadata:
+      labels:
+        app: programio-code
+    spec:
+      containers:
+        - name: programio-code
+          image: programio-code-docker-image  # 使用你构建的 Docker 镜像
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 15000  # 容器内端口
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 15000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 15000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: programio-code-service
+spec:
+  selector:
+    app: programio-code  # 与Pod标签匹配
+  ports:
+    - protocol: TCP
+      port: 8080       # 外部暴露的端口
+      targetPort: 15000 # 容器内部的端口
+      nodePort: 30080   # 在本地机器上暴露的端口
+  type: NodePort  # 将服务类型设置为 NodePort
