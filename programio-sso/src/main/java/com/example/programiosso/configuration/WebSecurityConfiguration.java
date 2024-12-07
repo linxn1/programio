@@ -24,7 +24,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter imple
         http
                 .authorizeRequests()
 
-//                .antMatchers("/user/hello").authenticated()
+                .antMatchers("/user/hello").authenticated()
                 .antMatchers().authenticated()
 
                 .anyRequest().permitAll()  // 允许所有请求，不需要登录

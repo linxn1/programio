@@ -34,4 +34,11 @@
         WHERE user_account = #{userAccount};
     </delete>
 
+    <!-- 更新用户 Token 信息 -->
+    <update id="updateUserToken" parameterType="com.example.programiocommon.pojo.dto.UserTokenDTO">
+        UPDATE user_token
+        SET token = #{token}, expires_at = #{expiresAt}, permission = #{permission}
+        WHERE user_account = #{userAccount};
+    </update>
+
 </mapper>

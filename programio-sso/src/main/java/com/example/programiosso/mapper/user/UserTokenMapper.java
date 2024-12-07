@@ -12,4 +12,6 @@ public interface UserTokenMapper {
     void insertUserToken(UserTokenDTO userTokenDTO);
 
     void deleteUserByAccount(Integer userAccount);
+
+    void updateUserToken(UserTokenDTO existingToken);
 }

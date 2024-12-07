@@ -40,7 +40,6 @@ public class UserLoginService {
         }
     }
 
-    // 用户登录方法，验证用户账号密码后生成JWT并存储
     public String userLogin(UserLoginTO userLoginDTO) {
         // 1. 查找用户是否存在
         System.out.println(userLoginDTO);
@@ -54,24 +53,40 @@ public class UserLoginService {
                 !passwordEncoder.matches(userLoginDTO.getPassword(), user.getPassword())) {
             throw new RuntimeException("密码错误");
         }
+
         // 3. 生成JWT令牌
         String token = JwtUtils.generate(user.getUserAccount());
+
         // 4. 获取当前时间和过期时间
         LocalDateTime localDateTime = LocalDateTime.now();
         LocalDateTime expiresAtLocalDateTime = localDateTime.plusHours(24);
         Timestamp expiresAt = Timestamp.valueOf(expiresAtLocalDateTime);
 
-        // 5. 保存Token到数据库
-        UserTokenDTO userTokenDTO = new UserTokenDTO();
-        userTokenDTO.setUserAccount(user.getUserAccount());
-        userTokenDTO.setToken(token);
-        userTokenDTO.setExpiresAt(expiresAt);
-        userTokenDTO.setPermission(user.getPermission());
+        // 5. 查询当前用户的 Token 信息
+        UserTokenDTO existingToken = userTokenMapper.findUserByAccount(user.getUserAccount());
 
-        userTokenMapper.insertUserToken(userTokenDTO);
+        if (existingToken != null) {
+            // 如果 Token 存在，检查是否过期
+            if (existingToken.getExpiresAt().before(Timestamp.valueOf(localDateTime))) {
+                // 如果 Token 已过期，更新 Token 和过期时间
+                existingToken.setToken(token);
+                existingToken.setExpiresAt(expiresAt);
+                userTokenMapper.updateUserToken(existingToken);
+            }
+        } else {
+            // 如果 Token 不存在，新增 Token
+            UserTokenDTO userTokenDTO = new UserTokenDTO();
+            userTokenDTO.setUserAccount(user.getUserAccount());
+            userTokenDTO.setToken(token);
+            userTokenDTO.setExpiresAt(expiresAt);
+            userTokenDTO.setPermission(user.getPermission());
+
+            userTokenMapper.insertUserToken(userTokenDTO);
+        }
 
         return token;
     }
+
 
 
     public void userLogout(Integer userAccount) {
