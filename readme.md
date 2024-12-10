@@ -8,6 +8,8 @@
 
 # 2.项目运行 #
 
+如果要使用ai帮助debug需要先申请一个ai的api和secretkey,这里使用的是百度千帆ai,将src/main/java/com/example/programiocode/service/AiCodeService.java路径下的api和secretkey改成自己的api就行(直接在application.yml文件里配置似乎会出现问题).
+
 ## 2.1直接运行 ##
 
 1.先运行sql文件夹底下的default_sql.sql文件(sql文件的密码是随机设置的,不能直接用作测试);
