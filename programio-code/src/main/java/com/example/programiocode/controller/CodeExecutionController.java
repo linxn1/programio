@@ -48,6 +48,7 @@ public class CodeExecutionController {
         String language = codeRequestTO.getLanguage();
         String code = codeRequestTO.getCode();
         String userInput = codeRequestTO.getUserInput();
+        codeRequestTO.setAiDebug(Boolean.FALSE);
         // 异步执行代码并处理结果
         CompletableFuture<CodeRespondTO> future = codeExecuteService.submitCode(language, code, userInput, questionId);
 

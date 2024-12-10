@@ -137,7 +137,6 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-
     </style>
 </head>
 
@@ -152,6 +151,13 @@
                 <option value="cpp">C++</option>
             </select>
         </div>
+        <div class="select-container">
+            <label for="aiDebugToggle">是否开启 aiDebug:</label>
+            <select id="aiDebugToggle">
+                <option value="true">开启</option>
+                <option value="false" selected>关闭</option>
+            </select>
+        </div>
         <div class="code-area">
             <div class="code-container">
                 <h3>编写代码</h3>
@@ -161,6 +167,10 @@
                 <h3>输出结果</h3>
                 <pre id="output"></pre>
                 <div id="outputDetails" class="output"></div>
+                <div id="aiDebugString">
+                    <h3>aiString</h3>
+                    <pre id="aiStringOutput"></pre>
+                </div>
             </div>
         </div>
         <div class="btn-container">
@@ -175,100 +185,55 @@
         const submitButton = document.getElementById('submitButton');
         const codeInput = document.getElementById('codeInput');
         const languageSelect = document.getElementById('languageSelect');
+        const aiDebugToggle = document.getElementById('aiDebugToggle');
         const output = document.getElementById('output');
+        const aiStringOutput = document.getElementById('aiStringOutput');
         const message = document.getElementById('message');
         const outputDetails = document.getElementById('outputDetails');
 
-        // 显示消息
         const showMessage = (msg, type) => {
             message.textContent = msg;
             message.className = type === 'success' ? 'success-message' : 'error-message';
         };
 
-        // 显示执行结果
         const showExecutionResult = (data) => {
-            // 清空上次的输出
             output.textContent = data.codeOutput || "无输出";
+            aiStringOutput.textContent = data.setAiString || "N/A";
             outputDetails.innerHTML = `
-                <div><span class="output-label">执行状态:</span> ${data.isCorrect === "correct" ? "成功" : "失败"}</div>
+                <div><span class="output-label">执行状态:</span> ${data.isCorrect || "N/A"}</div>
                 <div><span class="output-label">执行时间:</span> ${data.time || "N/A"}</div>
                 <div><span class="output-label">内存使用:</span> ${data.memory || "N/A"}</div>
                 <div><span class="output-label">语言:</span> ${data.language}</div>
-                <div><span class="output-label">是否接受:</span> ${data.isAccepted === "yes" ? "是" : "否"}</div>
-                <div><span class="output-label">准确率:</span> ${data.accuracyRate || "N/A"}</div>
-                <div><span class="output-label">正确输出:</span> ${data.codeOutput || "N/A"}</div>
-                <div><span class="output-label">错误输出:</span> ${data.errorOutput || "N/A"}</div>
             `;
         };
 
-        // 执行代码
         const executeCode = () => {
             const codeData = {
-                userId: "1", // 这里可以根据需要从用户登录信息中获取
-                questionId: 101, // 同样可以根据需要传入
-                language: languageSelect.value, // 获取选择的编程语言
+                userId: "1",
+                questionId: 101,
+                language: languageSelect.value,
                 code: codeInput.value,
-                userInput: "" // 可以设置输入的值，如果没有则为空
+                aiDebug: aiDebugToggle.value === "true"
             };
 
             fetch('http://localhost:15000/code/execute', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(codeData)
             })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.isCorrect === "correct") {
-                        showMessage("代码执行成功！", "success");
-                    } else {
-                        showMessage("代码执行失败！", "error");
-                    }
+                    showMessage(data.isCorrect === "correct" ? "执行成功" : "执行失败", data.isCorrect === "correct" ? "success" : "error");
                     showExecutionResult(data);
                 })
                 .catch(error => {
                     console.error('请求失败:', error);
-                    showMessage("请求失败，请稍后再试！", "error");
+                    showMessage("请求失败，请稍后再试", "error");
                 });
         };
 
-        // 提交代码
-        const submitCode = () => {
-            const codeData = {
-                userId: "1", // 这里可以根据需要从用户登录信息中获取
-                questionId: 101, // 同样可以根据需要传入
-                language: languageSelect.value, // 获取选择的编程语言
-                code: codeInput.value,
-                userInput: "" // 可以设置输入的值，如果没有则为空
-            };
-
-            fetch('http://localhost:15000/code/submit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(codeData)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.isCorrect === "correct") {
-                        showMessage("代码提交成功！", "success");
-                        showExecutionResult(data);
-                    } else {
-                        showMessage("代码提交失败！", "error");
-                        showExecutionResult(data);
-                    }
-                })
-                .catch(error => {
-                    console.error('请求失败:', error);
-                    showMessage("请求失败，请稍后再试！", "error");
-                });
-        };
-
-        // 事件绑定
         executeButton.addEventListener('click', executeCode);
-        submitButton.addEventListener('click', submitCode);
+        submitButton.addEventListener('click', executeCode);
     </script>
 </body>
 
