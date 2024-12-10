@@ -3,6 +3,7 @@ package com.example.programiocode.service;
 import com.example.programiocode.utils.ExecutionStrategy;
 import com.example.programiocode.utils.ProcessUtils;
 import com.example.programiocommon.pojo.to.CodeRespondTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -14,8 +15,11 @@ public class PythonExecutionStrategy implements ExecutionStrategy {
 
     private CodeRespondTO codeRespondTO = new CodeRespondTO(); // 需要返回的值
 
+    @Autowired
+    private AiCodeService aiCodeService;
+
     @Override
-    public CodeRespondTO executeCode(String language, String pythonScript, String userInput) {
+    public CodeRespondTO executeCode(String language, String pythonScript, String userInput, Boolean aiDebug) {
         codeRespondTO.setLanguage(language);
 
         Process process = null;
@@ -130,7 +134,10 @@ public class PythonExecutionStrategy implements ExecutionStrategy {
                 process.destroy();  // 确保进程被销毁
             }
         }
-        System.out.println(codeRespondTO.getErrorOutput());
+        if (aiDebug) {
+                String problem = aiCodeService.chat(codeRespondTO.getErrorOutput());
+                codeRespondTO.setAiString(problem);
+        }
         return codeRespondTO;
     }
 }

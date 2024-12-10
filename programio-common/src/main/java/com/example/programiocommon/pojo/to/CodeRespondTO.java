@@ -12,6 +12,7 @@ public class CodeRespondTO implements Serializable {
     private String codeOutput;
     private String errorOutput;
     private String language;
+    private String aiString;
 
     private String isAccepted;
     private String accuracyRate;
@@ -25,8 +26,9 @@ public class CodeRespondTO implements Serializable {
                 ", codeOutput='" + codeOutput + '\'' +
                 ", errorOutput='" + errorOutput + '\'' +
                 ", language='" + language + '\'' +
+                ", aiString='" + aiString + '\'' +
                 ", isAccepted='" + isAccepted + '\'' +
-                ", accuracyRate=" + accuracyRate +
+                ", accuracyRate='" + accuracyRate + '\'' +
                 '}';
     }
 }

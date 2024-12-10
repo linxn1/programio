@@ -11,4 +11,5 @@ public class CodeRequestTO implements Serializable {
     private String code;
     private String userInput;
     private Integer questionId;
+    private Boolean aiDebug;
 }

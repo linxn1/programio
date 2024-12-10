@@ -3,6 +3,7 @@ package com.example.programiocode.service;
 import com.example.programiocode.utils.ExecutionStrategy;
 import com.example.programiocode.utils.ProcessUtils;
 import com.example.programiocommon.pojo.to.CodeRespondTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -26,10 +27,14 @@ public class CppExecutionStrategy implements ExecutionStrategy {
 //    private String codeOutputPath;
     private String codeOutputPath = "src/main/resources/tempfiles";
 
+    @Autowired
+    private AiCodeService aiCodeService;
+
+
     private CodeRespondTO codeRespondTO = new CodeRespondTO(); // 需要返回的值
 
     @Override
-    public CodeRespondTO executeCode(String language, String cppCode, String userInput) {
+    public CodeRespondTO executeCode(String language, String cppCode, String userInput, Boolean aiDebug) {
         codeRespondTO.setLanguage(language);
 
         Process process = null;
@@ -182,7 +187,10 @@ public class CppExecutionStrategy implements ExecutionStrategy {
                 e.printStackTrace();
             }
         }
-
+        if (aiDebug) {
+            String problem = aiCodeService.chat(codeRespondTO.getErrorOutput());
+            codeRespondTO.setAiString(problem);
+        }
         return codeRespondTO;
     }
 }

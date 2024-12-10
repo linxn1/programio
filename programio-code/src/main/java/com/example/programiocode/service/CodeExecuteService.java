@@ -16,6 +16,16 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class CodeExecuteService {
+
+    @Autowired
+    private PythonExecutionStrategy pythonExecutionStrategy;
+
+    @Autowired
+    private JavaExecutionStrategy javaExecutionStrategy;
+
+    @Autowired
+    private CppExecutionStrategy cppExecutionStrategy;
+
     @Autowired
     @Qualifier("testTaskExecutor")
     private ThreadPoolTaskExecutor testTaskExecutor;  // 注入线程池
@@ -29,11 +39,12 @@ public class CodeExecuteService {
 
 
     // 执行用户请求并返回结果
-    public CompletableFuture<CodeRespondTO> executeCode(String language, String code, String userInput) {
+    public CompletableFuture<CodeRespondTO> executeCode(String language, String code, String userInput, Boolean aiDebug) {
         return CompletableFuture.supplyAsync(() -> {
             // 根据语言选择执行策略
             ExecutionStrategy strategy = getExecutionStrategy(language);
-            CodeRespondTO codeRespondTO = strategy.executeCode(language, code, userInput);
+            CodeRespondTO codeRespondTO = strategy.executeCode(language, code, userInput, aiDebug);
+
 
             return codeRespondTO;
         }, testTaskExecutor);
@@ -44,7 +55,7 @@ public class CodeExecuteService {
         return CompletableFuture.supplyAsync(() -> {
             // 根据语言选择执行策略
             ExecutionStrategy strategy = getExecutionStrategy(language);
-            CodeRespondTO codeRespondTO = strategy.executeCode(language, code, userInput);
+            CodeRespondTO codeRespondTO = strategy.executeCode(language, code, userInput, Boolean.FALSE);
 
             // 获取题目答案并计算响应结果
             CodeRespondTO codeRespondTOForAll = new CodeExecutionResultProcessor(questionId, language, codeRespondTO, code).process();
@@ -57,11 +68,11 @@ public class CodeExecuteService {
     private ExecutionStrategy getExecutionStrategy(String language) {
         switch (language.toLowerCase()) {
             case "python":
-                return new PythonExecutionStrategy();
+                return pythonExecutionStrategy;
             case "java":
-                return new JavaExecutionStrategy();
+                return javaExecutionStrategy;
             case "c++":
-                return new CppExecutionStrategy();
+                return cppExecutionStrategy;
             default:
                 throw new IllegalArgumentException("Unsupported language: " + language);
         }

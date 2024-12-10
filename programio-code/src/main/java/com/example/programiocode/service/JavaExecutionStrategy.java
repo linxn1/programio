@@ -4,6 +4,7 @@ package com.example.programiocode.service;
 import com.example.programiocode.utils.ExecutionStrategy;
 import com.example.programiocode.utils.ProcessUtils;
 import com.example.programiocommon.pojo.to.CodeRespondTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -27,10 +28,14 @@ public class JavaExecutionStrategy implements ExecutionStrategy {
 //    private String codeOutputPath;
     private String codeOutputPath = "src/main/resources/tempfiles";
 
+    @Autowired
+    private AiCodeService aiCodeService;
+
+
     private CodeRespondTO codeRespondTO = new CodeRespondTO(); // 返回值对象
 
     @Override
-    public CodeRespondTO executeCode(String language, String javaCode, String userInput) {
+    public CodeRespondTO executeCode(String language, String javaCode, String userInput, Boolean aiDebug) {
         codeRespondTO.setLanguage(language);
 
         Process process = null;
@@ -131,7 +136,6 @@ public class JavaExecutionStrategy implements ExecutionStrategy {
             }
 
 
-
             codeRespondTO.setTime(elapsedTime + "ms");  // 更新运行时间
 
             // 获取进程 ID 和内存使用
@@ -205,6 +209,10 @@ public class JavaExecutionStrategy implements ExecutionStrategy {
                     e.printStackTrace();  // 打印删除文件时的异常信息
                 }
             }
+        }
+        if (aiDebug) {
+            String problem = aiCodeService.chat(codeRespondTO.getErrorOutput());
+            codeRespondTO.setAiString(problem);
         }
         return codeRespondTO;
     }

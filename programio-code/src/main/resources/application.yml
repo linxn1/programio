@@ -38,7 +38,3 @@ springdoc:
     path: /swagger-ui.html
     url: /v3/api-docs  # 这是确保 Swagger UI 能正确获取到文档的配置
 
-
-
-app:
-  code-output-path: src/main/resources/tempfiles

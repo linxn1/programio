@@ -27,7 +27,7 @@ public class SecurityConfiguration {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:51273")  // 允许的前端地址
+                        .allowedOrigins("http://localhost:51273", "http://localhost:63342")  // 允许的前端地址
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowCredentials(true);  // 允许跨域发送凭证
             }
