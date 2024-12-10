@@ -9,15 +9,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class AiCodeService {
 
-    private static final String APIKey = "your_api_key";
-    private static final String SecretKey = "your_secret_key";
+    private static final String APIKey = "your apikey";
+    private static final String SecretKey = "your secretkey";
 
     private static Qianfan qianfan = new Qianfan(Auth.TYPE_OAUTH, APIKey, SecretKey);
 
     public String chat(String problem) {
-        ChatBuilder builder = qianfan.chatCompletion().model("ERNIE-Speed-8K");
-        builder.addMessage("user", problem);
-        ChatResponse response = builder.execute();
-        return response.getResult();
+        try {
+            ChatBuilder builder = qianfan.chatCompletion().model("ERNIE-Speed-8K");
+            builder.addMessage("user", problem);
+            ChatResponse response = builder.execute();
+            return response.getResult();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return "功能暂不可用";
     }
 }
