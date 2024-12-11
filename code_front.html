@@ -7,6 +7,7 @@
     <title>代码提交</title>
     <style>
         /* 重置浏览器默认样式 */
+        /* 重置浏览器默认样式 */
         * {
             margin: 0;
             padding: 0;
@@ -41,12 +42,14 @@
 
         .code-area {
             display: flex;
-            gap: 20px;
+            justify-content: space-between;
             width: 100%;
+            gap: 20px;
         }
 
-        .code-container {
-            width: 50%;
+        .code-container,
+        .result-container {
+            width: 48%; /* Use a smaller width to allow space between containers */
         }
 
         .code-container textarea {
@@ -67,7 +70,6 @@
         }
 
         .result-container {
-            width: 50%;
             padding: 20px;
             background-color: #f4f7fc;
             border-radius: 4px;
@@ -80,6 +82,7 @@
             width: 100%;
             display: flex;
             justify-content: space-between;
+            gap: 20px;
         }
 
         button {
@@ -137,6 +140,7 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+
     </style>
 </head>
 
@@ -203,6 +207,7 @@
                 <div><span class="output-label">执行状态:</span> ${data.isCorrect || "N/A"}</div>
                 <div><span class="output-label">执行时间:</span> ${data.time || "N/A"}</div>
                 <div><span class="output-label">内存使用:</span> ${data.memory || "N/A"}</div>
+                <div><span class="output-label">错误输出:</span> ${data.errorOutput || "N/A"}</div>
                 <div><span class="output-label">语言:</span> ${data.language}</div>
             `;
         };
@@ -218,7 +223,7 @@
 
             fetch('http://localhost:15000/code/execute', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(codeData)
             })
                 .then(response => response.json())
