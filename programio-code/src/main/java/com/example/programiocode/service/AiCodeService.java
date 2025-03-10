@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class AiCodeService {
 
-    private static final String APIKey = "your apikey";
-    private static final String SecretKey = "your secretkey";
+    private static final String APIKey = "hbJ56QLCFlN3cY1V1P3NiXGH";
+    private static final String SecretKey = "MSVYRVpj6Qq5IrmMPbR3rS3T1tOur3Op";
 
     private static Qianfan qianfan = new Qianfan(Auth.TYPE_OAUTH, APIKey, SecretKey);
 
@@ -26,3 +26,4 @@ public class AiCodeService {
         return "功能暂不可用";
     }
 }
+

@@ -202,13 +202,14 @@
 
         const showExecutionResult = (data) => {
             output.textContent = data.codeOutput || "无输出";
-            aiStringOutput.textContent = data.setAiString || "N/A";
+            // aiStringOutput.textContent = data.setAiString || "N/A";
             outputDetails.innerHTML = `
                 <div><span class="output-label">执行状态:</span> ${data.isCorrect || "N/A"}</div>
                 <div><span class="output-label">执行时间:</span> ${data.time || "N/A"}</div>
                 <div><span class="output-label">内存使用:</span> ${data.memory || "N/A"}</div>
                 <div><span class="output-label">错误输出:</span> ${data.errorOutput || "N/A"}</div>
                 <div><span class="output-label">语言:</span> ${data.language}</div>
+                <div><span class="output-label">aidebug:</span> ${data.aiString}</div>
             `;
         };
 

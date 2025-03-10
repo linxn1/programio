@@ -137,7 +137,9 @@ public class PythonExecutionStrategy implements ExecutionStrategy {
         if (aiDebug) {
                 String problem = aiCodeService.chat(codeRespondTO.getErrorOutput());
                 codeRespondTO.setAiString(problem);
+            System.out.println(problem);
         }
+        System.out.println(codeRespondTO);
         return codeRespondTO;
     }
 }
